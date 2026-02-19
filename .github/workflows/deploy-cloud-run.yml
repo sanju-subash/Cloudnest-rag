@@ -1,0 +1,48 @@
+name: Deploy Cloud Run
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build and Deploy Cloud Run (Secret Manager)
+        env:
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          REGION: ${{ secrets.GCP_REGION }}
+          SERVICE_NAME: ${{ secrets.CLOUD_RUN_SERVICE }}
+          GEMINI_SECRET_NAME: ${{ secrets.GEMINI_SECRET_NAME }}
+          RUNTIME_SA: ${{ secrets.CLOUD_RUN_RUNTIME_SA }}
+        run: |
+          gcloud config set project "$PROJECT_ID"
+
+          gcloud secrets add-iam-policy-binding "$GEMINI_SECRET_NAME" \
+            --member="serviceAccount:$RUNTIME_SA" \
+            --role="roles/secretmanager.secretAccessor"
+
+          gcloud builds submit --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME"
+
+          gcloud run deploy "$SERVICE_NAME" \
+            --image "gcr.io/$PROJECT_ID/$SERVICE_NAME" \
+            --region "$REGION" \
+            --platform managed \
+            --allow-unauthenticated \
+            --service-account "$RUNTIME_SA" \
+            --set-secrets "GEMINI_API_KEY=$GEMINI_SECRET_NAME:latest" \
+            --set-env-vars "MODEL_NAME=gemini-2.5-flash,RESTAURANT_NAME=CloudNest Restaurant,RESTAURANT_ADDRESS=India"

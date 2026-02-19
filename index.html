@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CloudNest Restaurant</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <style>
+            :root {
+                --bg-top: #fff6ee;
+                --bg-mid: #ffe6d3;
+                --bg-bottom: #d9f2ef;
+                --card: rgba(255, 255, 255, 0.82);
+                --card-border: rgba(255, 255, 255, 0.95);
+                --text: #1c2932;
+                --muted: #51616d;
+                --accent: #0fa38f;
+                --accent-strong: #0a7b6b;
+                --danger: #c3413a;
+                --bot-bubble: #f1f6f8;
+                --user-bubble: linear-gradient(140deg, #09a68f, #17be9e);
+                --chip: #ffffff;
+                --chip-border: rgba(28, 52, 60, 0.14);
+                --shadow-lg: 0 30px 64px rgba(21, 48, 56, 0.18);
+                --shadow-md: 0 14px 28px rgba(20, 42, 48, 0.14);
+            }
+
+            * { box-sizing: border-box; }
+
+            body {
+                margin: 0;
+                min-height: 100vh;
+                font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+                color: var(--text);
+                background:
+                    radial-gradient(circle at 10% 10%, rgba(255, 131, 89, 0.24), transparent 34%),
+                    radial-gradient(circle at 88% 14%, rgba(26, 191, 168, 0.26), transparent 33%),
+                    radial-gradient(circle at 52% 88%, rgba(255, 198, 118, 0.25), transparent 38%),
+                    linear-gradient(150deg, var(--bg-top), var(--bg-mid) 50%, var(--bg-bottom));
+                display: grid;
+                place-items: center;
+                padding: 20px 14px;
+            }
+
+            .shell {
+                width: min(980px, 100%);
+                animation: fade-in 320ms ease-out;
+            }
+
+            @keyframes fade-in {
+                from { opacity: 0; transform: translateY(8px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            .chat-card {
+                background: var(--card);
+                border: 1px solid var(--card-border);
+                border-radius: 26px;
+                box-shadow: var(--shadow-lg);
+                backdrop-filter: blur(10px);
+                overflow: hidden;
+            }
+
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 16px;
+                padding: 18px 22px;
+                border-bottom: 1px solid rgba(26, 57, 62, 0.08);
+            }
+
+            .brand { display: flex; align-items: center; gap: 12px; }
+
+            .logo {
+                width: 44px;
+                height: 44px;
+                border-radius: 16px;
+                display: grid;
+                place-items: center;
+                color: #fff;
+                font-weight: 800;
+                background: linear-gradient(145deg, #ff9d61, #0ea891);
+                box-shadow: var(--shadow-md);
+            }
+
+            .brand h1 {
+                margin: 0;
+                font-size: 1.2rem;
+                font-weight: 800;
+                line-height: 1.2;
+            }
+
+            .brand p {
+                margin: 2px 0 0;
+                color: var(--muted);
+                font-size: 0.86rem;
+            }
+
+            .meta {
+                display: grid;
+                gap: 6px;
+                justify-items: end;
+            }
+
+            .pill {
+                padding: 7px 10px;
+                font-size: 0.74rem;
+                font-weight: 700;
+                border-radius: 999px;
+                letter-spacing: 0.25px;
+                background: #dbf8f3;
+                color: var(--accent-strong);
+            }
+
+            .pill.pending { background: #fff4dd; color: #9a6200; }
+
+            .toolbar {
+                padding: 10px 16px;
+                border-top: 1px solid rgba(26, 57, 62, 0.08);
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                background: rgba(255, 255, 255, 0.55);
+            }
+
+            .diet-bar {
+                padding: 10px 16px;
+                border-top: 1px solid rgba(26, 57, 62, 0.08);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: wrap;
+                background: rgba(255, 255, 255, 0.5);
+            }
+
+            .service-bar {
+                padding: 10px 16px;
+                border-top: 1px solid rgba(26, 57, 62, 0.08);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: wrap;
+                background: rgba(255, 255, 255, 0.56);
+            }
+
+            .slot-bar {
+                padding: 10px 16px;
+                border-top: 1px solid rgba(26, 57, 62, 0.08);
+                display: none;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: wrap;
+                background: rgba(255, 255, 255, 0.52);
+            }
+
+            .slot-buttons {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+            }
+
+            .slot-tabbar {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                margin-right: 4px;
+            }
+
+            .slot-tab {
+                border: 1px solid var(--chip-border);
+                background: #fff;
+                color: #23434a;
+                border-radius: 10px;
+                font-size: 0.76rem;
+                font-weight: 700;
+                padding: 6px 10px;
+                cursor: pointer;
+            }
+
+            .slot-tab.active {
+                background: #e7f8f4;
+                border-color: #0fa38f;
+                color: #0a7b6b;
+            }
+
+            .slot-btn {
+                border: 1px solid var(--chip-border);
+                background: var(--chip);
+                color: #23434a;
+                border-radius: 10px;
+                font-size: 0.75rem;
+                font-weight: 700;
+                padding: 6px 10px;
+                cursor: pointer;
+                transition: transform 120ms ease, box-shadow 120ms ease;
+            }
+
+            .slot-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 5px 12px rgba(17, 50, 56, 0.12);
+            }
+
+            .slot-btn.active {
+                background: #0a7b6b;
+                border-color: #0a7b6b;
+                color: #fff;
+            }
+
+            .guide-bar {
+                padding: 9px 16px;
+                border-top: 1px solid rgba(26, 57, 62, 0.08);
+                background: rgba(16, 157, 141, 0.08);
+                color: #1f4249;
+                font-size: 0.82rem;
+                font-weight: 600;
+            }
+
+            .diet-label {
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: var(--muted);
+                margin-right: 2px;
+            }
+
+            .diet-btn {
+                border: 1px solid var(--chip-border);
+                background: var(--chip);
+                color: #23434a;
+                border-radius: 10px;
+                font-size: 0.8rem;
+                font-weight: 700;
+                padding: 6px 10px;
+                cursor: pointer;
+                transition: transform 120ms ease, box-shadow 120ms ease;
+            }
+
+            .diet-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 5px 12px rgba(17, 50, 56, 0.12);
+            }
+
+            .diet-btn.active {
+                background: var(--accent);
+                border-color: var(--accent);
+                color: #fff;
+            }
+
+            .diet-btn:disabled {
+                opacity: 0.46;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
+            }
+
+            .menu-gallery {
+                display: none;
+                border-top: 1px solid rgba(26, 57, 62, 0.08);
+                background: rgba(255, 255, 255, 0.58);
+                padding: 14px 14px 12px;
+            }
+
+            .menu-gallery.open {
+                display: block;
+            }
+
+            .menu-title {
+                margin: 0 0 10px;
+                font-size: 0.88rem;
+                color: var(--muted);
+                font-weight: 600;
+            }
+
+            .menu-grid {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+            .menu-card {
+                border: 1px solid rgba(20, 61, 68, 0.16);
+                border-radius: 12px;
+                overflow: hidden;
+                background: linear-gradient(180deg, #ffffff, #fbfcfc);
+                box-shadow: 0 6px 14px rgba(18, 42, 47, 0.08);
+                transition: transform 120ms ease, box-shadow 120ms ease;
+            }
+
+            .menu-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 18px rgba(18, 42, 47, 0.12);
+            }
+
+            .menu-card img {
+                display: block;
+                width: 100%;
+                height: 120px;
+                object-fit: cover;
+                background: linear-gradient(135deg, #eaf1f2, #f8f4eb);
+            }
+
+            .menu-card-body {
+                padding: 8px 10px 10px;
+                display: grid;
+                gap: 3px;
+            }
+
+            .menu-item-name {
+                font-size: 0.86rem;
+                font-weight: 700;
+                line-height: 1.2;
+            }
+
+            .menu-item-meta {
+                font-size: 0.77rem;
+                color: var(--muted);
+                line-height: 1.2;
+            }
+
+            .qty-controls {
+                margin-top: 6px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .qty-btn {
+                width: 24px;
+                height: 24px;
+                border: 1px solid rgba(20, 61, 68, 0.2);
+                border-radius: 6px;
+                background: #fff;
+                font-weight: 700;
+                cursor: pointer;
+                line-height: 1;
+            }
+
+            .qty-value {
+                min-width: 18px;
+                text-align: center;
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: #28434a;
+            }
+
+            .add-item-btn {
+                margin-left: auto;
+                border: none;
+                border-radius: 8px;
+                background: var(--accent);
+                color: #fff;
+                font-size: 0.76rem;
+                font-weight: 700;
+                padding: 5px 9px;
+                cursor: pointer;
+            }
+
+            .tool-btn {
+                border: 1px solid var(--chip-border);
+                background: var(--chip);
+                color: #25464c;
+                border-radius: 10px;
+                font-size: 0.82rem;
+                font-weight: 600;
+                padding: 7px 12px;
+                cursor: pointer;
+                transition: transform 120ms ease, box-shadow 120ms ease;
+            }
+
+            .tool-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 6px 14px rgba(18, 42, 47, 0.1);
+            }
+
+            .tool-btn.primary {
+                background: var(--accent);
+                border-color: var(--accent);
+                color: #fff;
+            }
+
+            .tool-btn.danger {
+                background: var(--chip);
+                border-color: rgba(198, 63, 63, 0.36);
+                color: var(--danger);
+            }
+
+            #chat-history {
+                height: min(52vh, 500px);
+                overflow-y: auto;
+                padding: 16px;
+                background: linear-gradient(180deg, rgba(255, 255, 255, 0.48), rgba(247, 251, 252, 0.92));
+            }
+
+            .message {
+                max-width: 84%;
+                margin-bottom: 12px;
+                padding: 10px 13px;
+                border-radius: 14px;
+                display: grid;
+                gap: 4px;
+                box-shadow: 0 6px 18px rgba(22, 51, 56, 0.08);
+                white-space: pre-line;
+                animation: pop 210ms ease-out;
+            }
+
+            @keyframes pop {
+                from { opacity: 0; transform: translateY(6px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            .user { margin-left: auto; background: var(--user-bubble); color: #fff; border-bottom-right-radius: 5px; }
+            .bot { margin-right: auto; background: var(--bot-bubble); color: #2a3b40; border-bottom-left-radius: 5px; }
+
+            .msg-role {
+                text-transform: uppercase;
+                letter-spacing: 0.35px;
+                font-size: 0.73rem;
+                font-weight: 700;
+                line-height: 1.1;
+            }
+
+            .msg-text {
+                line-height: 1.5;
+                font-size: 0.95rem;
+                word-break: break-word;
+            }
+
+            .composer {
+                padding: 14px;
+                border-top: 1px solid rgba(26, 57, 62, 0.08);
+                background: rgba(255, 255, 255, 0.68);
+            }
+
+            .controls {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 10px;
+            }
+
+            input {
+                width: 100%;
+                border-radius: 12px;
+                border: 1.5px solid rgba(26, 57, 62, 0.2);
+                font-family: inherit;
+                font-size: 0.95rem;
+                padding: 12px 13px;
+                outline: none;
+                transition: border-color 150ms ease, box-shadow 150ms ease;
+            }
+
+            input:focus {
+                border-color: rgba(15, 157, 141, 0.8);
+                box-shadow: 0 0 0 4px rgba(15, 157, 141, 0.14);
+            }
+
+            #send-btn {
+                border: none;
+                border-radius: 12px;
+                padding: 0 18px;
+                background: linear-gradient(135deg, #0fa58f, #0b7f71);
+                color: #fff;
+                font-weight: 700;
+                cursor: pointer;
+                box-shadow: 0 10px 18px rgba(15, 128, 116, 0.28);
+                transition: transform 120ms ease, box-shadow 120ms ease;
+            }
+
+            #send-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 13px 20px rgba(15, 128, 116, 0.32);
+            }
+
+            #send-btn:disabled { opacity: 0.68; cursor: not-allowed; }
+
+            .hint { margin: 9px 2px 2px; font-size: 0.79rem; color: var(--muted); }
+
+            @media (max-width: 760px) {
+                .header { padding: 14px; }
+                .meta { justify-items: start; }
+                .toolbar { padding: 10px 12px; }
+                #chat-history { height: 58vh; padding: 12px; }
+                .message { max-width: 92%; }
+                .controls { grid-template-columns: 1fr; }
+                #send-btn { height: 42px; }
+                .menu-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            }
+        </style>
+    </head>
+    <body>
+        <main class="shell">
+            <section class="chat-card">
+                <header class="header">
+                    <div class="brand">
+                        <div class="logo">CN</div>
+                        <div>
+                            <h1>CloudNest Restaurant</h1>
+                            <p>Client-ready ordering, confirmation, and billing assistant</p>
+                        </div>
+                    </div>
+                    <div class="meta">
+                        <span id="live-pill" class="pill">LIVE</span>
+                        <span id="order-pill" class="pill">No Pending Order</span>
+                    </div>
+                </header>
+
+                <div id="chat-history"></div>
+
+                <div class="composer">
+                    <div class="controls">
+                        <input id="question" type="text" placeholder="" onkeypress="handleEnter(event)" autocomplete="off">
+                        <button id="send-btn" onclick="askBot()">Send</button>
+                    </div>
+                </div>
+
+                <div class="service-bar">
+                    <span class="diet-label">Order Type:</span>
+                    <button class="diet-btn" id="service-dinein-btn" onclick="setServiceMode('dine_in')">Dine-In</button>
+                    <button class="diet-btn" id="service-delivery-btn" onclick="setServiceMode('delivery')">Online Delivery</button>
+                    <button class="diet-btn" id="service-clear-btn" onclick="setServiceMode('')">Reset</button>
+                    <span class="diet-label" id="service-status">Not selected</span>
+                </div>
+
+                <div class="slot-bar" id="slot-bar">
+                    <span class="diet-label">Dine-In Slots:</span>
+                    <div id="slot-tabs" class="slot-tabbar"></div>
+                    <div id="slot-buttons" class="slot-buttons"></div>
+                </div>
+
+                <div class="guide-bar" id="guide-bar">Step 1: Choose Dine-In or Online Delivery.</div>
+
+                <div class="diet-bar">
+                    <span class="diet-label">Order Preference:</span>
+                    <button class="diet-btn" id="diet-veg-btn" onclick="setDietPreference('veg')">Veg</button>
+                    <button class="diet-btn" id="diet-nonveg-btn" onclick="setDietPreference('nonveg')">Non-Veg</button>
+                    <button class="diet-btn" id="diet-clear-btn" onclick="setDietPreference('')">Clear</button>
+                    <span class="diet-label" id="diet-status">Not selected</span>
+                </div>
+
+                <div class="toolbar">
+                    <button class="tool-btn" onclick="toggleMenuGallery()">Menu</button>
+                    <button class="tool-btn" onclick="quickSend('opening hours')">Timings</button>
+                    <button class="tool-btn" onclick="quickSend('policies')">Policies</button>
+                    <button class="tool-btn primary" onclick="quickSend('confirm')">Confirm Order</button>
+                    <button class="tool-btn danger" onclick="quickSend('cancel')">Cancel Order</button>
+                    <button class="tool-btn" id="download-bill-btn" onclick="downloadBill()" disabled>Download PDF</button>
+                </div>
+
+                <div id="menu-gallery" class="menu-gallery">
+                    <p class="menu-title">Menu with photos. Click any item to add it to your order.</p>
+                    <div id="menu-grid" class="menu-grid"></div>
+                </div>
+            </section>
+        </main>
+
+        <script>
+            const menuItems = [
+                { name: "Margherita Pizza", price: 250, type: "Vegetarian", isVeg: true, image: "/menu-images/margherita-pizza.jpg" },
+                { name: "Chicken Biryani", price: 300, type: "Non-Vegetarian", isVeg: false, image: "/menu-images/chicken-biriyani.jpg" },
+                { name: "Veg Salad", price: 180, type: "Vegan", isVeg: true, image: "/menu-images/veg-salad.jpg" },
+                { name: "Paneer Tikka", price: 280, type: "Vegetarian", isVeg: true, image: "/menu-images/paneer-tikka.jpg" },
+                { name: "Masala Dosa", price: 220, type: "Vegetarian", isVeg: true, image: "/menu-images/masala-dosa.jpg" },
+                { name: "Chocolate Brownie", price: 160, type: "Dessert", isVeg: true, image: "/menu-images/chocolate-brownie.jpg" },
+            ];
+
+            const sessionKey = "cloudnest_session_id";
+            const serviceKey = "cloudnest_service_mode";
+            const serviceSlotKey = "cloudnest_service_slot";
+            const dietKey = "cloudnest_diet_preference";
+            let sessionId = localStorage.getItem(sessionKey);
+            let serviceMode = localStorage.getItem(serviceKey) || "";
+            let serviceStage = serviceMode === "dine_in" ? "await_slot" : serviceMode === "delivery" ? "ordering" : "choose_mode";
+            let serviceSlot = localStorage.getItem(serviceSlotKey) || "";
+            let activeSlotTab = "breakfast";
+            let dietPreference = localStorage.getItem(dietKey) || "";
+            if (!sessionId) {
+                sessionId = `cn-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+                localStorage.setItem(sessionKey, sessionId);
+            }
+
+            if (!serviceMode) {
+                dietPreference = "";
+                serviceSlot = "";
+                localStorage.setItem(dietKey, "");
+                localStorage.setItem(serviceSlotKey, "");
+            }
+
+            if (serviceMode !== "dine_in") {
+                serviceSlot = "";
+                localStorage.setItem(serviceSlotKey, "");
+            }
+
+            function escapeHtml(text) {
+                return text
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/\"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            function setOrderPill(isPending) {
+                const pill = document.getElementById("order-pill");
+                if (isPending) {
+                    pill.classList.add("pending");
+                    pill.textContent = "Pending Order";
+                    return;
+                }
+                pill.classList.remove("pending");
+                pill.textContent = "No Pending Order";
+            }
+
+            function setBillButton(data) {
+                const downloadBtn = document.getElementById("download-bill-btn");
+                if (data && data.kind === "bill" && data.bill_id) {
+                    downloadBtn.disabled = false;
+                    downloadBtn.dataset.billId = data.bill_id;
+                    return;
+                }
+                if (!downloadBtn.dataset.billId) {
+                    downloadBtn.disabled = true;
+                }
+            }
+
+            function addMessage(role, text) {
+                const history = document.getElementById("chat-history");
+                const wrapper = document.createElement("div");
+                wrapper.className = `message ${role}`;
+
+                const roleEl = document.createElement("div");
+                roleEl.className = "msg-role";
+                roleEl.textContent = role === "user" ? "You" : "CloudNest";
+
+                const textEl = document.createElement("div");
+                textEl.className = "msg-text";
+                textEl.innerHTML = escapeHtml(text);
+
+                wrapper.appendChild(roleEl);
+                wrapper.appendChild(textEl);
+                history.appendChild(wrapper);
+                history.scrollTop = history.scrollHeight;
+            }
+
+            async function askBot(customQuestion = null) {
+                const input = document.getElementById("question");
+                const btn = document.getElementById("send-btn");
+                const question = (customQuestion ?? input.value).trim();
+                if (!question) return;
+
+                addMessage("user", question);
+                input.value = "";
+                btn.disabled = true;
+
+                try {
+                    const res = await fetch("/ask", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ question, session_id: sessionId }),
+                    });
+
+                    const data = await res.json();
+                    if (typeof data.service_mode === "string") {
+                        serviceMode = data.service_mode;
+                        localStorage.setItem(serviceKey, serviceMode);
+                    }
+                    if (typeof data.service_stage === "string") {
+                        serviceStage = data.service_stage;
+                    }
+                    if (typeof data.service_slot === "string") {
+                        serviceSlot = data.service_slot;
+                        localStorage.setItem(serviceSlotKey, serviceSlot);
+                        activeSlotTab = deriveSlotTab(serviceSlot);
+                    }
+                    syncServiceUi();
+                    addMessage("bot", data.answer || "No answer available.");
+                    if (data.kind === "mode_selected" && data.service_mode === "dine_in") {
+                        document.getElementById("slot-bar").scrollIntoView({ behavior: "smooth", block: "nearest" });
+                    }
+                    if (
+                        data.kind === "slot_confirmed" ||
+                        (data.kind === "mode_selected" && data.service_mode === "delivery")
+                    ) {
+                        document.querySelector(".diet-bar").scrollIntoView({ behavior: "smooth", block: "nearest" });
+                    }
+                    if (data.kind === "bill") {
+                        serviceSlot = "";
+                        localStorage.setItem(serviceSlotKey, "");
+                        activeSlotTab = "breakfast";
+                        addMessage("bot", "Your order is successful. Download your invoice by clicking the Download PDF button.");
+                    }
+                    setOrderPill(Boolean(data.order_pending));
+                    setBillButton(data);
+                } catch (error) {
+                    addMessage("bot", "Connection error. Please verify API server is running.");
+                }
+
+                btn.disabled = false;
+            }
+
+            function quickSend(text) {
+                askBot(text);
+            }
+
+            function formatMinutesAs12h(totalMinutes) {
+                const mins = ((totalMinutes % (24 * 60)) + (24 * 60)) % (24 * 60);
+                const hour24 = Math.floor(mins / 60);
+                const minute = mins % 60;
+                const period = hour24 >= 12 ? "PM" : "AM";
+                const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+                return `${hour12}:${String(minute).padStart(2, "0")} ${period}`;
+            }
+
+            function buildQuarterHourSlots(startHour24, endHour24) {
+                const slots = [];
+                for (let current = startHour24 * 60; current < endHour24 * 60; current += 15) {
+                    slots.push(`${formatMinutesAs12h(current)} - ${formatMinutesAs12h(current + 15)}`);
+                }
+                return slots;
+            }
+
+            const slotGroups = {
+                breakfast: buildQuarterHourSlots(7, 10),
+                lunch: buildQuarterHourSlots(12, 15),
+                dinner: buildQuarterHourSlots(19, 22),
+            };
+
+            function deriveSlotTab(slotValue) {
+                const value = String(slotValue || "");
+                if (!value) return "breakfast";
+                if (slotGroups.breakfast.includes(value)) return "breakfast";
+                if (slotGroups.lunch.includes(value)) return "lunch";
+                if (slotGroups.dinner.includes(value)) return "dinner";
+                return "breakfast";
+            }
+
+            function updateGuideBar() {
+                const guide = document.getElementById("guide-bar");
+                if (!serviceMode) {
+                    guide.textContent = "Step 1: Choose Dine-In or Online Delivery.";
+                    return;
+                }
+                if (serviceMode === "dine_in" && serviceStage === "await_slot") {
+                    guide.textContent = "Step 2: Select Breakfast/Lunch/Dinner tab, then pick a 15-minute slot.";
+                    return;
+                }
+                if (serviceMode === "delivery" && serviceStage === "await_address") {
+                    guide.textContent = "Final Step: Enter delivery address to generate invoice.";
+                    return;
+                }
+                if (!dietPreference) {
+                    guide.textContent = "Step 3: Select Veg or Non-Veg preference.";
+                    return;
+                }
+                guide.textContent = "Step 4: Set quantity, click Add, then Confirm Order.";
+            }
+
+            function renderSlotButtons() {
+                const slotBar = document.getElementById("slot-bar");
+                const slotTabs = document.getElementById("slot-tabs");
+                const slotButtons = document.getElementById("slot-buttons");
+                slotTabs.innerHTML = "";
+                slotButtons.innerHTML = "";
+
+                if (serviceMode !== "dine_in") {
+                    slotBar.style.display = "none";
+                    return;
+                }
+
+                slotBar.style.display = "flex";
+                if (!slotGroups[activeSlotTab]) {
+                    activeSlotTab = deriveSlotTab(serviceSlot);
+                }
+
+                const tabDefs = [
+                    { key: "breakfast", label: "Breakfast" },
+                    { key: "lunch", label: "Lunch" },
+                    { key: "dinner", label: "Dinner" },
+                ];
+
+                for (const tab of tabDefs) {
+                    const tabBtn = document.createElement("button");
+                    tabBtn.type = "button";
+                    tabBtn.className = "slot-tab";
+                    tabBtn.textContent = tab.label;
+                    tabBtn.classList.toggle("active", activeSlotTab === tab.key);
+                    tabBtn.onclick = () => {
+                        activeSlotTab = tab.key;
+                        renderSlotButtons();
+                    };
+                    slotTabs.appendChild(tabBtn);
+                }
+
+                const slots = slotGroups[activeSlotTab] || [];
+                for (const slot of slots) {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "slot-btn";
+                    btn.textContent = slot;
+                    btn.classList.toggle("active", slot === serviceSlot);
+                    btn.onclick = () => {
+                        serviceSlot = slot;
+                        localStorage.setItem(serviceSlotKey, serviceSlot);
+                        quickSend(slot);
+                    };
+                    slotButtons.appendChild(btn);
+                }
+            }
+
+            function syncServiceUi() {
+                const dineBtn = document.getElementById("service-dinein-btn");
+                const deliveryBtn = document.getElementById("service-delivery-btn");
+                const status = document.getElementById("service-status");
+                const vegBtn = document.getElementById("diet-veg-btn");
+                const nonVegBtn = document.getElementById("diet-nonveg-btn");
+
+                dineBtn.classList.toggle("active", serviceMode === "dine_in");
+                deliveryBtn.classList.toggle("active", serviceMode === "delivery");
+
+                if (serviceMode === "dine_in" && serviceSlot) {
+                    activeSlotTab = deriveSlotTab(serviceSlot);
+                }
+
+                if (serviceMode === "dine_in") {
+                    if (serviceStage === "await_slot") {
+                        status.textContent = "Selected: Dine-In (Select Slot Below)";
+                    } else if (serviceSlot) {
+                        status.textContent = `Selected: Dine-In (${serviceSlot})`;
+                    } else {
+                        status.textContent = "Selected: Dine-In";
+                    }
+                } else if (serviceMode === "delivery") {
+                    if (serviceStage === "await_address") {
+                        status.textContent = "Selected: Online Delivery (Awaiting Address)";
+                    } else {
+                        status.textContent = "Selected: Online Delivery";
+                    }
+                } else {
+                    status.textContent = "Not selected";
+                }
+
+                const canChooseDiet = Boolean(serviceMode) && !(serviceMode === "dine_in" && serviceStage === "await_slot");
+                vegBtn.disabled = !canChooseDiet;
+                nonVegBtn.disabled = !canChooseDiet;
+
+                renderSlotButtons();
+                updateGuideBar();
+            }
+
+            function setServiceMode(mode, sendToBot = true) {
+                const previousMode = serviceMode;
+                serviceMode = mode;
+                if (mode === "dine_in") {
+                    serviceStage = "await_slot";
+                    serviceSlot = "";
+                    activeSlotTab = "breakfast";
+                    localStorage.setItem(serviceSlotKey, "");
+                } else if (mode === "delivery") {
+                    serviceStage = "ordering";
+                    serviceSlot = "";
+                    activeSlotTab = "breakfast";
+                    localStorage.setItem(serviceSlotKey, "");
+                } else {
+                    serviceStage = "choose_mode";
+                    serviceSlot = "";
+                    activeSlotTab = "breakfast";
+                    localStorage.setItem(serviceSlotKey, "");
+                }
+                localStorage.setItem(serviceKey, mode);
+
+                if (!mode || previousMode !== mode) {
+                    dietPreference = "";
+                    localStorage.setItem(dietKey, "");
+                    const panel = document.getElementById("menu-gallery");
+                    panel.classList.remove("open");
+                    setDietPreference("", false);
+                }
+
+                syncServiceUi();
+
+                if (sendToBot) {
+                    if (mode === "dine_in") {
+                        quickSend("dine in");
+                    } else if (mode === "delivery") {
+                        quickSend("online delivery");
+                    } else {
+                        quickSend("cancel");
+                        addMessage("bot", "Order type reset. Please choose Dine-In or Online Delivery.");
+                    }
+                }
+            }
+
+            function setDietPreference(pref, notify = true) {
+                if (!serviceMode && pref) {
+                    addMessage("bot", "Please choose order type first: Dine-In or Online Delivery.");
+                    return;
+                }
+                if (serviceMode === "dine_in" && serviceStage === "await_slot" && pref) {
+                    addMessage("bot", "Please confirm your dine-in time slot first.");
+                    return;
+                }
+
+                dietPreference = pref;
+                localStorage.setItem(dietKey, pref);
+
+                const vegBtn = document.getElementById("diet-veg-btn");
+                const nonVegBtn = document.getElementById("diet-nonveg-btn");
+                const status = document.getElementById("diet-status");
+
+                vegBtn.classList.toggle("active", pref === "veg");
+                nonVegBtn.classList.toggle("active", pref === "nonveg");
+
+                if (pref === "veg") {
+                    status.textContent = "Selected: Veg";
+                    if (notify) addMessage("bot", "Veg selected. Showing only veg items.");
+                } else if (pref === "nonveg") {
+                    status.textContent = "Selected: Non-Veg";
+                    if (notify) addMessage("bot", "Non-Veg selected. Showing only non-veg items.");
+                } else {
+                    status.textContent = "Not selected";
+                    if (notify) addMessage("bot", "Diet preference cleared.");
+                }
+
+                const panel = document.getElementById("menu-gallery");
+                if (pref === "veg" || pref === "nonveg") {
+                    panel.classList.add("open");
+                    renderMenuGallery();
+                    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                } else {
+                    panel.classList.remove("open");
+                }
+
+                updateGuideBar();
+            }
+
+            function renderMenuGallery() {
+                const menuGrid = document.getElementById("menu-grid");
+                menuGrid.innerHTML = "";
+
+                if (!serviceMode) {
+                    const info = document.createElement("div");
+                    info.className = "menu-item-meta";
+                    info.textContent = "Select order type first: Dine-In or Online Delivery.";
+                    menuGrid.appendChild(info);
+                    return;
+                }
+
+                if (serviceMode === "dine_in" && serviceStage === "await_slot") {
+                    const info = document.createElement("div");
+                    info.className = "menu-item-meta";
+                    info.textContent = "Share your dine-in slot first, then select Veg/Non-Veg and order.";
+                    menuGrid.appendChild(info);
+                    return;
+                }
+
+                if (serviceMode === "delivery" && serviceStage === "await_address") {
+                    const info = document.createElement("div");
+                    info.className = "menu-item-meta";
+                    info.textContent = "Delivery address is pending. Enter address in chat to generate final bill.";
+                    menuGrid.appendChild(info);
+                    return;
+                }
+
+                const filteredItems = menuItems.filter((item) => {
+                    if (!dietPreference) return false;
+                    if (dietPreference === "veg") return item.isVeg;
+                    if (dietPreference === "nonveg") return !item.isVeg;
+                    return true;
+                });
+
+                if (!dietPreference) {
+                    const info = document.createElement("div");
+                    info.className = "menu-item-meta";
+                    info.textContent = "Select Veg or Non-Veg preference to view menu items.";
+                    menuGrid.appendChild(info);
+                    return;
+                }
+
+                if (filteredItems.length === 0) {
+                    const info = document.createElement("div");
+                    info.className = "menu-item-meta";
+                    info.textContent = "No items available for this preference.";
+                    menuGrid.appendChild(info);
+                    return;
+                }
+
+                for (const item of filteredItems) {
+                    const card = document.createElement("div");
+                    card.className = "menu-card";
+                    card.innerHTML = `
+                        <img src="${item.image}" alt="${item.name}" onerror="this.src='https://placehold.co/400x240/f3f6f7/4b5c61?text=${encodeURIComponent(item.name)}'">
+                        <div class="menu-card-body">
+                            <div class="menu-item-name">${escapeHtml(item.name)}</div>
+                            <div class="menu-item-meta">Rs ${item.price} - ${escapeHtml(item.type)}</div>
+                            <div class="qty-controls">
+                                <button type="button" class="qty-btn" data-action="minus">-</button>
+                                <span class="qty-value">0</span>
+                                <button type="button" class="qty-btn" data-action="plus">+</button>
+                                <button type="button" class="add-item-btn">Add</button>
+                            </div>
+                        </div>
+                    `;
+
+                    const qtyValueEl = card.querySelector(".qty-value");
+                    const minusBtn = card.querySelector("[data-action='minus']");
+                    const plusBtn = card.querySelector("[data-action='plus']");
+                    const addBtn = card.querySelector(".add-item-btn");
+
+                    minusBtn.onclick = () => {
+                        const current = Number(qtyValueEl.textContent || "0");
+                        qtyValueEl.textContent = String(Math.max(0, current - 1));
+                    };
+
+                    plusBtn.onclick = () => {
+                        const current = Number(qtyValueEl.textContent || "0");
+                        qtyValueEl.textContent = String(Math.min(20, current + 1));
+                    };
+
+                    addBtn.onclick = () => {
+                        if (!serviceMode) {
+                            addMessage("bot", "Please choose order type first: Dine-In or Online Delivery.");
+                            return;
+                        }
+                        if (serviceMode === "dine_in" && serviceStage === "await_slot") {
+                            addMessage("bot", "Please confirm dine-in time slot first.");
+                            return;
+                        }
+                        if (!dietPreference) {
+                            addMessage("bot", "Please select Veg or Non-Veg preference first.");
+                            return;
+                        }
+                        const qty = Number(qtyValueEl.textContent || "0");
+                        if (qty <= 0) {
+                            addMessage("bot", `Please select quantity for ${item.name} before adding.`);
+                            return;
+                        }
+                        askBot(`add ${qty} ${item.name.toLowerCase()}`);
+                        qtyValueEl.textContent = "0";
+                    };
+
+                    menuGrid.appendChild(card);
+                }
+            }
+
+            function toggleMenuGallery() {
+                const panel = document.getElementById("menu-gallery");
+                panel.classList.toggle("open");
+                if (panel.classList.contains("open")) {
+                    renderMenuGallery();
+                }
+            }
+
+            async function downloadBill() {
+                const downloadBtn = document.getElementById("download-bill-btn");
+                if (downloadBtn.disabled) return;
+                const billId = downloadBtn.dataset.billId || `cloudnest-invoice-${Date.now()}`;
+
+                try {
+                    const res = await fetch(`/bill/pdf?session_id=${encodeURIComponent(sessionId)}&ts=${Date.now()}`);
+                    if (!res.ok) {
+                        addMessage("bot", "Unable to download invoice right now.");
+                        return;
+                    }
+
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+                    const anchor = document.createElement("a");
+                    anchor.href = url;
+                    anchor.download = `${billId}.pdf`;
+                    document.body.appendChild(anchor);
+                    anchor.click();
+                    anchor.remove();
+                    URL.revokeObjectURL(url);
+
+                    addMessage("bot", "Invoice downloaded successfully and order confirmed.");
+                } catch (error) {
+                    addMessage("bot", "Unable to download invoice right now.");
+                }
+            }
+
+            function handleEnter(event) {
+                if (event.key === "Enter") askBot();
+            }
+
+            function getWelcomeMessage() {
+                if (!serviceMode) {
+                    return "Welcome. Please choose Dine-In or Online Delivery to begin.";
+                }
+                if (serviceMode === "dine_in" && serviceStage === "await_slot") {
+                    return "Dine-In selected. Choose Breakfast/Lunch/Dinner tab, then pick a 15-minute slot.";
+                }
+                if (!dietPreference) {
+                    return "Now choose Veg or Non-Veg, then add items with quantity.";
+                }
+                return "You are ready. Add items with quantity and click Confirm Order.";
+            }
+
+            if (dietPreference === "veg" || dietPreference === "nonveg") {
+                const vegBtn = document.getElementById("diet-veg-btn");
+                const nonVegBtn = document.getElementById("diet-nonveg-btn");
+                const status = document.getElementById("diet-status");
+                vegBtn.classList.toggle("active", dietPreference === "veg");
+                nonVegBtn.classList.toggle("active", dietPreference === "nonveg");
+                status.textContent = dietPreference === "veg" ? "Selected: Veg" : "Selected: Non-Veg";
+            }
+
+            syncServiceUi();
+            addMessage("bot", getWelcomeMessage());
+        </script>
+    </body>
+</html>
+

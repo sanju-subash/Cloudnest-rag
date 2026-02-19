@@ -1,0 +1,34 @@
+Restaurant Name: Cloudnest
+
+Opening Hours:
+Monday-Sunday: 10 AM - 10 PM
+
+Menu:
+
+1. Margherita Pizza - Rs 250
+   Ingredients: Tomato, Mozzarella, Basil
+   Type: Vegetarian
+
+2. Chicken Biryani - Rs 300
+   Ingredients: Rice, Chicken, Spices
+   Type: Non-Vegetarian
+
+3. Veg Salad - Rs 180
+   Ingredients: Lettuce, Tomato, Cucumber
+   Type: Vegan
+
+4. Paneer Tikka - Rs 280
+   Ingredients: Paneer, Yogurt, Spices
+   Type: Vegetarian
+
+5. Masala Dosa - Rs 220
+   Ingredients: Rice Batter, Potato Masala, Spices
+   Type: Vegetarian
+
+6. Chocolate Brownie - Rs 160
+   Ingredients: Cocoa, Flour, Butter, Sugar
+   Type: Dessert
+
+Policies:
+- No outside food allowed
+- Home delivery available
