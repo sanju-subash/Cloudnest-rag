@@ -282,6 +282,8 @@
 
             .menu-gallery.open {
                 display: block;
+                max-height: 380px;
+                overflow-y: auto;
             }
 
             .menu-title {
@@ -601,27 +603,20 @@
             const serviceSlotKey = "cloudnest_service_slot";
             const dietKey = "cloudnest_diet_preference";
             let sessionId = localStorage.getItem(sessionKey);
-            let serviceMode = localStorage.getItem(serviceKey) || "";
-            let serviceStage = serviceMode === "dine_in" ? "await_slot" : serviceMode === "delivery" ? "ordering" : "choose_mode";
-            let serviceSlot = localStorage.getItem(serviceSlotKey) || "";
+            let serviceMode = "";
+            let serviceStage = "choose_mode";
+            let serviceSlot = "";
             let activeSlotTab = "breakfast";
-            let dietPreference = localStorage.getItem(dietKey) || "";
+            let dietPreference = "";
             if (!sessionId) {
                 sessionId = `cn-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
                 localStorage.setItem(sessionKey, sessionId);
             }
 
-            if (!serviceMode) {
-                dietPreference = "";
-                serviceSlot = "";
-                localStorage.setItem(dietKey, "");
-                localStorage.setItem(serviceSlotKey, "");
-            }
-
-            if (serviceMode !== "dine_in") {
-                serviceSlot = "";
-                localStorage.setItem(serviceSlotKey, "");
-            }
+            // Always start with a clean UI state for first-time clarity.
+            localStorage.removeItem(serviceKey);
+            localStorage.removeItem(serviceSlotKey);
+            localStorage.removeItem(dietKey);
 
             function escapeHtml(text) {
                 return text
@@ -960,9 +955,8 @@
 
                 const panel = document.getElementById("menu-gallery");
                 if (pref === "veg" || pref === "nonveg") {
-                    if (panel.classList.contains("open")) {
-                        renderMenuGallery();
-                    }
+                    panel.classList.add("open");
+                    renderMenuGallery();
                 } else {
                     panel.classList.remove("open");
                 }
