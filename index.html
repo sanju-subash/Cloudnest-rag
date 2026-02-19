@@ -122,7 +122,8 @@
                 border-top: 1px solid rgba(26, 57, 62, 0.08);
                 display: flex;
                 gap: 8px;
-                flex-wrap: wrap;
+                flex-wrap: nowrap;
+                overflow-x: auto;
                 background: rgba(255, 255, 255, 0.55);
             }
 
@@ -159,13 +160,17 @@
             .slot-buttons {
                 display: flex;
                 gap: 6px;
-                flex-wrap: wrap;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                width: 100%;
+                padding-bottom: 2px;
             }
 
             .slot-tabbar {
                 display: flex;
                 gap: 6px;
-                flex-wrap: wrap;
+                flex-wrap: nowrap;
+                overflow-x: auto;
                 margin-right: 4px;
             }
 
@@ -216,6 +221,19 @@
                 color: #1f4249;
                 font-size: 0.82rem;
                 font-weight: 600;
+            }
+
+            .toolbar::-webkit-scrollbar,
+            .slot-buttons::-webkit-scrollbar,
+            .slot-tabbar::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .toolbar::-webkit-scrollbar-thumb,
+            .slot-buttons::-webkit-scrollbar-thumb,
+            .slot-tabbar::-webkit-scrollbar-thumb {
+                background: rgba(32, 80, 86, 0.22);
+                border-radius: 999px;
             }
 
             .diet-label {
@@ -485,6 +503,20 @@
                 .controls { grid-template-columns: 1fr; }
                 #send-btn { height: 42px; }
                 .menu-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+                .service-bar,
+                .slot-bar,
+                .diet-bar {
+                    gap: 6px;
+                }
+                .diet-btn,
+                .slot-btn,
+                .slot-tab {
+                    padding: 6px 9px;
+                    font-size: 0.74rem;
+                }
+                .guide-bar {
+                    font-size: 0.78rem;
+                }
             }
         </style>
     </head>
@@ -767,6 +799,11 @@
                     return;
                 }
 
+                if (serviceStage !== "await_slot") {
+                    slotBar.style.display = "none";
+                    return;
+                }
+
                 slotBar.style.display = "flex";
                 if (!slotGroups[activeSlotTab]) {
                     activeSlotTab = deriveSlotTab(serviceSlot);
@@ -923,9 +960,9 @@
 
                 const panel = document.getElementById("menu-gallery");
                 if (pref === "veg" || pref === "nonveg") {
-                    panel.classList.add("open");
-                    renderMenuGallery();
-                    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                    if (panel.classList.contains("open")) {
+                        renderMenuGallery();
+                    }
                 } else {
                     panel.classList.remove("open");
                 }
